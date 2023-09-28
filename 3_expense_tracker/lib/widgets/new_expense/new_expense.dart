@@ -1,6 +1,12 @@
 import 'dart:ffi';
 
 import 'package:expense_tracker/models/expense.dart';
+import 'package:expense_tracker/widgets/new_expense/amount_textfield.dart';
+import 'package:expense_tracker/widgets/new_expense/cancel_button.dart';
+import 'package:expense_tracker/widgets/new_expense/category_dropdown.dart';
+import 'package:expense_tracker/widgets/new_expense/date_button.dart';
+import 'package:expense_tracker/widgets/new_expense/save_button.dart';
+import 'package:expense_tracker/widgets/new_expense/title_textfield.dart';
 import 'package:flutter/material.dart';
 
 class NewExpense extends StatefulWidget {
@@ -83,85 +89,33 @@ class _NewExpenseState extends State<NewExpense> {
   @override
   Widget build(BuildContext context) {
     final keyboardSpace = MediaQuery.of(context).viewInsets.bottom;
-    
 
     return SizedBox(
       height: double.infinity,
       child: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(16, 48, 16, keyboardSpace + 16),
+          padding: EdgeInsets.fromLTRB(16, 16, 16, keyboardSpace + 16),
           child: Column(
             children: [
-              TextField(
-                controller: _titleController,
-                maxLength: 50,
-                decoration: const InputDecoration(
-                  label: Text('Title'),
-                ),
-              ),
+              TitleTextField(titleController: _titleController),
               Row(
                 children: [
                   Expanded(
-                    child: TextField(
-                      controller: _amountController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                        prefixText: '\$ ',
-                        label: Text('Amount'),
-                      ),
+                    child: AmountTextField(
+                      amountController: _amountController,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(_selectedDate == null
-                            ? 'No date selected'
-                            : formatter.format(_selectedDate!)),
-                        IconButton(
-                          onPressed: _presentDatePicker,
-                          icon: const Icon(Icons.calendar_month),
-                        ),
-                      ],
-                    ),
-                  ),
+                      child: DateButton(presentDatePicker: _presentDatePicker)),
                 ],
               ),
               Row(
                 children: [
-                  DropdownButton(
-                    value: _selectedCategory,
-                    items: Category.values
-                        .map(
-                          (category) => DropdownMenuItem(
-                            value: category,
-                            child: Text(category.name),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        if (value == null) {
-                          return;
-                        }
-                        _selectedCategory = value;
-                      });
-                    },
-                  ),
+                  CategoryDropdown(selectedCategory: _selectedCategory),
                   const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Cancel'),
-                  ),
-                  ElevatedButton(
-                    onPressed: _submitExpenseData,
-                    child: const Text('Save Expense'),
-                  ),
+                  const CancelButton(),
+                  SaveButton(submitExpenseData: _submitExpenseData),
                 ],
               )
             ],
